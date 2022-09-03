@@ -2,19 +2,18 @@ import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
-import bodyParser from "body-parser";
+
+import appRoute from "./routes/app";
 
 dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json()); // for parsing application/json (Have no idea if should use BodyParser instead)
+app.use(express.json());
 app.use(cors());
 
 app.use(morgan("dev"));
-
-import appRoute from "./routes/app";
 
 app.use("/", appRoute);
 
