@@ -2,24 +2,20 @@ import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+app.use(express.json()); // for parsing application/json (Have no idea if should use BodyParser instead)
 app.use(cors());
 
 app.use(morgan("dev"));
 
-app.get("/", async (req: Request, res: Response) => {
-  try {
-    res.status(200).json({ message: "Hello World" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
+import appRoute from "./routes/app";
+
+app.use("/", appRoute);
 
 app.listen(PORT, () => console.log(`⚡Server is running on http://localhost:${PORT}/`));
