@@ -37,19 +37,43 @@ export const resetUsersTable = (req: Request, res: Response) => {
       ('mark@meta.com','EvilCorp'),('bill@outlook.com','ImJustRich'),
       ('elon@tesla.com','Mars=Earth2.0'),('jeff@amazon.com','IOwnTheWorld');`,
     //Show all users
+    "SELECT * FROM users WHERE email LIKE '%OO%';",
     "SELECT * FROM users;",
   ];
 
-  //This method isn't safe make sure to use it properly
+  let hasResult = false;
   queryString.forEach((query) => {
     connection.query(query, (error, results) => {
       if (error) {
-        return res.status(500).json({ error: errorChecker(error) });
+        if (!hasResult) res.status(500).json({ error: errorChecker(error) });
+        hasResult = true;
       } else if (query.includes("SELECT")) {
-        return res.status(200).json({ results });
+        if (!hasResult) res.status(200).json({ results });
+        hasResult = true;
       }
     });
+
+    //
   });
+
+  // try {
+  //   queryString.forEach((query) => {
+  //     connection.query(query, (error, results) => {
+  //       if (error) {
+  //         console.log("ERR: " + query)
+  //         throw error
+  //       } else if (query.includes("SELECT")) {
+  //         console.log("SELECT: " + query)
+  //         return res.status(200).json({ results });
+  //       }
+  //     });
+  //   });
+  // } catch (error) {
+  //   res.status(500).json({ error: errorChecker(error) })
+  // }finally{
+  //   res.status(200).json({results})
+  // }
+  //This method isn't safe make sure to use it properly
 };
 
 export const getUsers = (req: Request, res: Response) => {
