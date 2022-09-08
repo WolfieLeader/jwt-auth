@@ -41,39 +41,19 @@ export const resetUsersTable = (req: Request, res: Response) => {
     "SELECT * FROM users;",
   ];
 
-  let hasResult = false;
+  //Make sure to use properly because it doesn't stop the execution
+  let hasStopped = false;
   queryString.forEach((query) => {
     connection.query(query, (error, results) => {
-      if (error) {
-        if (!hasResult) res.status(500).json({ error: errorChecker(error) });
-        hasResult = true;
-      } else if (query.includes("SELECT")) {
-        if (!hasResult) res.status(200).json({ results });
-        hasResult = true;
+      if (error && !hasStopped) {
+        hasStopped = true;
+        res.status(500).json({ error: errorChecker(error) });
+      } else if (query.includes("SELECT") && !hasStopped) {
+        hasStopped = true;
+        res.status(200).json({ results });
       }
     });
-
-    //
   });
-
-  // try {
-  //   queryString.forEach((query) => {
-  //     connection.query(query, (error, results) => {
-  //       if (error) {
-  //         console.log("ERR: " + query)
-  //         throw error
-  //       } else if (query.includes("SELECT")) {
-  //         console.log("SELECT: " + query)
-  //         return res.status(200).json({ results });
-  //       }
-  //     });
-  //   });
-  // } catch (error) {
-  //   res.status(500).json({ error: errorChecker(error) })
-  // }finally{
-  //   res.status(200).json({results})
-  // }
-  //This method isn't safe make sure to use it properly
 };
 
 export const getUsers = (req: Request, res: Response) => {

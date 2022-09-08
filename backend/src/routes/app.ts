@@ -4,7 +4,7 @@ import { getWelcome, getUsers, resetUsersTable, getUsersById } from "../controll
 const appRoute = express.Router();
 
 appRoute.get("/", getWelcome);
-appRoute.get("/reset", resetUsersTable);
+appRoute.post("/reset", resetUsersTable);
 appRoute.get("/users", getUsers);
 appRoute.get("/users/:id", getUsersById);
 
