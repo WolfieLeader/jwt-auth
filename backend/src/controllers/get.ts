@@ -1,7 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import mysql from "mysql2/promise";
 import connectionSettings from "../helpers/defaultSettings";
 import { convertErrorToString, convertParamsToInt } from "../helpers";
+
+export const getSettings = (req: Request, res: Response) => {
+  return res.status(200).json({ settings: connectionSettings });
+};
 
 const getHelper = async (res: Response, sql: string) => {
   try {

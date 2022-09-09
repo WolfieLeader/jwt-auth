@@ -24,3 +24,14 @@ export const convertParamsToInt = (params: string): number[] | null => {
   }
   return null;
 };
+
+export const formatNumber = (stringedNumber: string): number => {
+  const list = [{ symbol: "B", value: 1e9 }, , { symbol: "M", value: 1e6 }, { symbol: "K", value: 1e3 }];
+  const number = Number(stringedNumber.slice(0, -1));
+  const symbol = stringedNumber.slice(-1);
+  const value = list.find((item) => item?.symbol === symbol)?.value;
+  if (value) {
+    return number * value;
+  }
+  return number;
+};
