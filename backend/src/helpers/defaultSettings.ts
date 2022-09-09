@@ -1,4 +1,7 @@
 import { User } from "../user";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const connectionSettings = {
   host: process.env.DB_HOST || "localhost",
@@ -33,3 +36,5 @@ export const defaultUsers: User[] = [
     password: "IOwnTheWorld",
   },
 ];
+
+export const secretKey = process.env.SECRET_KEY || "Secret";

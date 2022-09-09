@@ -4,5 +4,15 @@ export interface User {
   hobbies?: string[];
   email: string;
   password: string;
-  createdAt?: Date;
+}
+
+export interface UserSQL {
+  id: number;
+  name: string;
+  netWorth?: string | null;
+  hobbies?: string[];
+  email: string;
+  password: string;
+  realPassword: string;
+  createdAt: Date;
 }

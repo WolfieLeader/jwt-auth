@@ -1,5 +1,5 @@
 import { getSettings, getUsers, getUsersById } from "./get";
 import { resetUsersTable } from "./actions";
-import { createUser } from "./set";
+import { createUser, loginUser } from "./auth";
 
-export { getSettings, getUsers, getUsersById, resetUsersTable, createUser };
+export { getSettings, getUsers, getUsersById, resetUsersTable, createUser, loginUser };

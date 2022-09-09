@@ -40,8 +40,8 @@ export const formatNumber = (stringedNumber: string): number => {
   const symbol = stringedNumber.slice(-1).toUpperCase();
   if (Number.isNaN(number)) return 0;
   if (Object.keys(Format).includes(symbol)) {
-    // @ts-ignore
-    return number * Format[symbol];
+    const symbolOf = symbol as string as keyof typeof Format;
+    return number * Format[symbolOf];
   }
   return number;
 };
@@ -50,4 +50,9 @@ export const validateEmail = (email: string): boolean => {
   const re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
+};
+
+export const hasLettersDigitsSpacesOnly = (string: string): boolean => {
+  const re = /^[a-zA-Z0-9 ]+$/;
+  return re.test(string);
 };

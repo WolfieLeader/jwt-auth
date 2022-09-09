@@ -1,14 +1,23 @@
-import { connectionSettings, defaultUsers } from "./defaultSettings";
-import { saltIt, compareSalt } from "./encrypt";
-import { convertErrorToString, convertParamsToInt, formatNumber, validateEmail } from "./functions";
+import { connectionSettings, defaultUsers, secretKey } from "./defaultSettings";
+import { saltIt, compareSalt, hashIt } from "./encrypt";
+import {
+  convertErrorToString,
+  convertParamsToInt,
+  formatNumber,
+  validateEmail,
+  hasLettersDigitsSpacesOnly,
+} from "./functions";
 
 export {
   connectionSettings,
   defaultUsers,
+  secretKey,
   saltIt,
   compareSalt,
   convertErrorToString,
   convertParamsToInt,
   formatNumber,
   validateEmail,
+  hasLettersDigitsSpacesOnly,
+  hashIt,
 };
