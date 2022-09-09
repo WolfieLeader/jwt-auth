@@ -13,6 +13,7 @@ const getHelper = async (res: Response, sql: string) => {
     res.status(500).json({ error: convertErrorToString(error) });
   }
 };
+
 export const getUsers = (req: Request, res: Response) => {
   getHelper(res, "SELECT * FROM users");
 };

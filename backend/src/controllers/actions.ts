@@ -1,10 +1,29 @@
 import { Request, Response, NextFunction } from "express";
-import mysql from "mysql2";
+import mysql from "mysql2/promise";
 import connectionSettings from "../helpers/defaultSettings";
 import { convertErrorToString } from "../helpers";
 
+const loopThroughQueries = async (res: Response, queries: string[], sqlCondition: string, finalMessage: string) => {
+  try {
+    const connection = await mysql.createConnection(connectionSettings);
+    let hasResults = false;
+    for (const query of queries) {
+      const [rows] = await connection.execute(query);
+      if (query.includes(sqlCondition)) {
+        res.status(200).json(rows);
+        hasResults = true;
+        break;
+      }
+    }
+    if (!hasResults) {
+      res.status(200).json({ message: finalMessage });
+    }
+    connection.end();
+  } catch (error) {
+    res.status(500).json({ error: convertErrorToString(error) });
+  }
+};
 export const resetUsersTable = (req: Request, res: Response) => {
-  const connection = mysql.createConnection(connectionSettings);
   const queryString = [
     //Remove all users
     "DROP TABLE IF EXISTS users;",
@@ -21,19 +40,5 @@ export const resetUsersTable = (req: Request, res: Response) => {
     //Show all users
     "SELECT * FROM users;",
   ];
-
-  //Make sure to use properly because it doesn't stop the execution
-  let hasStopped = false;
-  queryString.forEach((query) => {
-    connection.query(query, (error, results) => {
-      if (error && !hasStopped) {
-        hasStopped = true;
-        res.status(500).json({ error: convertErrorToString(error) });
-      } else if (query.includes("SELECT") && !hasStopped) {
-        hasStopped = true;
-        res.status(200).json({ results });
-      }
-    });
-  });
-  connection.end();
+  loopThroughQueries(res, queryString, "SELECT", "All users have been reset");
 };
