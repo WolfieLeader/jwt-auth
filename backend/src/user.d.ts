@@ -1,7 +1,7 @@
 export interface User {
   name: string;
-  birthDate?: string;
   netWorth?: string;
+  hobbies?: string[];
   email: string;
   password: string;
   createdAt?: Date;

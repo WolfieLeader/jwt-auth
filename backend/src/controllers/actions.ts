@@ -1,60 +1,20 @@
 import { Request, Response } from "express";
 import mysql from "mysql2/promise";
-import connectionSettings from "../helpers/defaultSettings";
-import { convertErrorToString, formatNumber } from "../helpers";
-import { saltIt } from "../helpers/encrypt";
-import { User } from "../user";
+import { formatNumber, saltIt, defaultUsers, convertErrorToString, connectionSettings } from "../helpers";
 
-const loopThroughQueries = async (res: Response, queries: string[], sqlCondition: string, finalMessage: string) => {
-  try {
-    const connection = await mysql.createConnection(connectionSettings);
-    let hasResults = false;
-    for (const query of queries) {
-      const [rows] = await connection.execute(query);
-      if (query.includes(sqlCondition)) {
-        res.status(200).json(rows);
-        hasResults = true;
-        break;
-      }
-    }
-    if (!hasResults) {
-      res.status(200).json({ message: finalMessage });
-    }
-    connection.end();
-  } catch (error) {
-    res.status(500).json({ error: convertErrorToString(error) });
-  }
-};
+export const resetUsersTable = async (req: Request, res: Response) => {
+  const mappedUsers = defaultUsers
+    .map(
+      (user) =>
+        `('${user.name}',\
+        ${user.netWorth ? formatNumber(user.netWorth) : null},\
+        '${user.email.toLowerCase()}',\
+        '${saltIt(user.password)}',\
+        '${user.password}')`
+    )
+    .join(",");
 
-export const resetUsersTable = (req: Request, res: Response) => {
-  const users: User[] = [
-    {
-      name: "Mark Zuckerberg",
-      netWorth: "57.7B",
-      email: "mark@meta.com",
-      password: "EvilCorp",
-    },
-    {
-      name: "Bill Gates",
-      netWorth: "107.4B",
-      email: "bill@outlook.com",
-      password: "ImJustRich",
-    },
-    {
-      name: "Elon Musk",
-      netWorth: "259.8B",
-      email: "elon@tesla.com",
-      password: "Mars=Earth2.0",
-    },
-    {
-      name: "Jeff Bezos",
-      netWorth: "152.9B",
-      email: "jeff@amazon.com",
-      password: "IOwnTheWorld",
-    },
-  ];
-
-  const queryString = [
+  const queries = [
     //Remove all users
     "DROP TABLE IF EXISTS users;",
     //Create table
@@ -70,16 +30,22 @@ export const resetUsersTable = (req: Request, res: Response) => {
       )
       `,
     //Insert users
-    `INSERT INTO users(name,netWorth,email,password,realPassword) 
-    VALUES ${users.map((user) => {
-      return `('${user.name}',\
-      ${user.netWorth ? formatNumber(user.netWorth) : null},\
-      '${user.email}',\
-      '${saltIt(user.password)}',\
-      '${user.password}')`;
-    })}`,
+    `INSERT INTO users(name,netWorth,email,password,realPassword) VALUES ${mappedUsers};`,
     //Show all users
     "SELECT * FROM users;",
   ];
-  loopThroughQueries(res, queryString, "SELECT", "All users have been reset");
+
+  try {
+    const connection = await mysql.createConnection(connectionSettings);
+    for (const query of queries) {
+      const [rows] = await connection.execute(query);
+      if (query.includes("SELECT")) {
+        res.status(201).json(rows);
+        break;
+      }
+    }
+    await connection.end();
+  } catch (error) {
+    res.status(500).json({ error: convertErrorToString(error) });
+  }
 };
