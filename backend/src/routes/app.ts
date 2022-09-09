@@ -1,9 +1,9 @@
 import express from "express";
-import { getWelcome, getUsers, resetUsersTable, getUsersById } from "../controllers";
+import { sendWelcome, getUsers, getUsersById, resetUsersTable } from "../controllers";
 
 const appRoute = express.Router();
 
-appRoute.get("/", getWelcome);
+appRoute.get("/", sendWelcome);
 appRoute.post("/reset", resetUsersTable);
 appRoute.get("/users", getUsers);
 appRoute.get("/users/:id", getUsersById);
