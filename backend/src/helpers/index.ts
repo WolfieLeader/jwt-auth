@@ -3,7 +3,8 @@ import { saltIt, compareSalt, hashIt } from "./encrypt";
 import {
   convertErrorToString,
   convertParamsToInt,
-  formatNumber,
+  formatNumberToString,
+  formatStringToNumber,
   validateEmail,
   hasLettersDigitsSpacesOnly,
 } from "./functions";
@@ -16,7 +17,8 @@ export {
   compareSalt,
   convertErrorToString,
   convertParamsToInt,
-  formatNumber,
+  formatNumberToString,
+  formatStringToNumber,
   validateEmail,
   hasLettersDigitsSpacesOnly,
   hashIt,

@@ -1,18 +1,28 @@
 import { Request, Response } from "express";
 import mysql from "mysql2/promise";
-import { formatNumber, saltIt, defaultUsers, convertErrorToString, connectionSettings } from "../helpers";
+import {
+  formatNumberToString,
+  formatStringToNumber,
+  saltIt,
+  defaultUsers,
+  convertErrorToString,
+  connectionSettings,
+} from "../helpers";
 
 export const resetUsersTable = async (req: Request, res: Response) => {
   const mappedUsers = defaultUsers
     .map(
       (user) =>
-        `('${user.name}',\
-        ${user.netWorth ? formatNumber(user.netWorth) : null},\
-        '${user.email.toLowerCase()}',\
-        '${saltIt(user.password)}',\
+        `('${user.name}',
+        ${user.netWorth ? formatStringToNumber(user.netWorth) : null},
+        ${user.hobbies ? `'{"array":${JSON.stringify(user.hobbies)}}'` : null},
+        '${user.email.toLowerCase()}',
+        '${saltIt(user.password)}',
         '${user.password}')`
     )
     .join(",");
+
+  console.log(mappedUsers);
 
   const queries = [
     //Remove all users
@@ -22,6 +32,7 @@ export const resetUsersTable = async (req: Request, res: Response) => {
         id INT AUTO_INCREMENT,
         name VARCHAR(255) NOT NULL,
         netWorth BIGINT,
+        hobbies JSON,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         realPassword VARCHAR(255) NOT NULL,
@@ -30,7 +41,7 @@ export const resetUsersTable = async (req: Request, res: Response) => {
       )
       `,
     //Insert users
-    `INSERT INTO users(name,netWorth,email,password,realPassword) VALUES ${mappedUsers};`,
+    `INSERT INTO users(name,netWorth,hobbies,email,password,realPassword) VALUES ${mappedUsers};`,
     //Show all users
     "SELECT * FROM users;",
   ];

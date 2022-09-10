@@ -26,12 +26,13 @@ export const convertParamsToInt = (params: string): number[] | null => {
 };
 
 enum Format {
+  T = 1e12,
   B = 1e9,
   M = 1e6,
   K = 1e3,
 }
 
-export const formatNumber = (stringedNumber: string): number => {
+export const formatStringToNumber = (stringedNumber: string): number => {
   if (!Number.isNaN(Number(stringedNumber))) {
     if (stringedNumber.includes(".")) return Number.parseFloat(stringedNumber);
     return Number(stringedNumber);
@@ -40,10 +41,18 @@ export const formatNumber = (stringedNumber: string): number => {
   const symbol = stringedNumber.slice(-1).toUpperCase();
   if (Number.isNaN(number)) return 0;
   if (Object.keys(Format).includes(symbol)) {
-    const symbolOf = symbol as string as keyof typeof Format;
+    const symbolOf = symbol as keyof typeof Format;
     return number * Format[symbolOf];
   }
   return number;
+};
+export const formatNumberToString = (number: number): string => {
+  const formatter = new Intl.NumberFormat("en", {
+    notation: "compact",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 2,
+  });
+  return formatter.format(number);
 };
 
 export const validateEmail = (email: string): boolean => {
