@@ -1,13 +1,6 @@
 import { Request, Response } from "express";
 import mysql from "mysql2/promise";
-import {
-  formatNumberToString,
-  formatStringToNumber,
-  saltIt,
-  defaultUsers,
-  convertErrorToString,
-  connectionSettings,
-} from "../helpers";
+import { formatStringToNumber, saltIt, defaultUsers, handleError, connectionSettings } from "../helpers";
 
 export const resetUsersTable = async (req: Request, res: Response) => {
   const mappedUsers = defaultUsers
@@ -15,7 +8,7 @@ export const resetUsersTable = async (req: Request, res: Response) => {
       (user) =>
         `('${user.name}',
         ${user.netWorth ? formatStringToNumber(user.netWorth) : null},
-        ${user.hobbies ? `'{"array":${JSON.stringify(user.hobbies)}}'` : null},
+        ${user.hobbies ? `'${JSON.stringify(user.hobbies)}'` : null},
         '${user.email.toLowerCase()}',
         '${saltIt(user.password)}',
         '${user.password}')`
@@ -56,7 +49,8 @@ export const resetUsersTable = async (req: Request, res: Response) => {
       }
     }
     await connection.end();
-  } catch (error) {
-    res.status(500).json({ error: convertErrorToString(error) });
+  } catch (err) {
+    const { errStatus, errMessage } = handleError(err);
+    res.status(errStatus).json({ error: errMessage });
   }
 };

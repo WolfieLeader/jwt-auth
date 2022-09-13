@@ -1,7 +1,7 @@
 import { connectionSettings, defaultUsers, secretKey } from "./defaultSettings";
 import { saltIt, compareSalt, hashIt } from "./encrypt";
 import {
-  convertErrorToString,
+  handleError,
   convertParamsToInt,
   formatNumberToString,
   formatStringToNumber,
@@ -15,7 +15,7 @@ export {
   secretKey,
   saltIt,
   compareSalt,
-  convertErrorToString,
+  handleError,
   convertParamsToInt,
   formatNumberToString,
   formatStringToNumber,

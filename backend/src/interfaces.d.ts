@@ -10,21 +10,14 @@ export interface UserSQL {
   id: number;
   name: string;
   netWorth: number | null;
-  hobbies: {
-    array: string[];
-  } | null;
+  hobbies: string[] | null;
   email: string;
   password: string;
   realPassword: string;
-  createdAt: Date;
+  createdAt: any;
 }
 
-export interface UserJWT {
-  id: number;
-  name: string;
-  netWorth: string | null;
-  hobbies: {
-    array: string[];
-  } | null;
-  email: string;
+export interface CError {
+  errMessage: string;
+  errStatus: number;
 }

@@ -1,12 +1,20 @@
-export const convertErrorToString = (error: any): string => {
+import { CError } from "../interfaces";
+export const handleError = (error: any): CError => {
   if (error instanceof Error) {
-    return error.message;
-  } else if (typeof error === "string") {
-    return error;
-  } else {
-    console.log(error);
-    return "Something went wrong";
+    return { errMessage: error.message, errStatus: 500 };
   }
+  if (
+    "errMessage" in error &&
+    typeof error.errMessage === "string" &&
+    "errStatus" in error &&
+    typeof error.errStatus === "number"
+  ) {
+    return error;
+  }
+  if (typeof error === "string") {
+    return { errMessage: error, errStatus: 500 };
+  }
+  return { errMessage: "Unknown error", errStatus: 500 };
 };
 
 export const convertParamsToInt = (params: string): number[] | null => {
@@ -34,17 +42,19 @@ enum Format {
 
 export const formatStringToNumber = (stringedNumber: string): number => {
   if (!Number.isNaN(Number(stringedNumber))) {
-    if (stringedNumber.includes(".")) return Number.parseFloat(stringedNumber);
+    if (stringedNumber.includes(".")) {
+      return Number.parseFloat(stringedNumber);
+    }
     return Number(stringedNumber);
   }
   const number = Number(stringedNumber.slice(0, -1));
   const symbol = stringedNumber.slice(-1).toUpperCase();
-  if (Number.isNaN(number)) return 0;
-  if (Object.keys(Format).includes(symbol)) {
-    const symbolOf = symbol as keyof typeof Format;
-    return number * Format[symbolOf];
+  if (Number.isNaN(number)) return -1;
+  if (!Object.keys(Format).includes(symbol)) {
+    return -1;
   }
-  return number;
+  const symbolOf = symbol as keyof typeof Format;
+  return number * Format[symbolOf];
 };
 export const formatNumberToString = (number: number): string => {
   const formatter = new Intl.NumberFormat("en", {
