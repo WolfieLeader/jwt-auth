@@ -1,4 +1,4 @@
-import { User } from "../user";
+import { User } from "../interfaces";
 import dotenv from "dotenv";
 
 dotenv.config();
